@@ -121,14 +121,22 @@ namespace Tedd.MortonEncodingTests
         [Fact]
         public void DocumentationExample()
         {
-var x = (UInt32)0b00000000_00000000;
-var y = (UInt32)0b00000000_11111111;
-var result = MortonEncoding.Encode(x, y);
-Assert.Equal("1010101010101010", Convert.ToString(result,2));
-// result is now: 0b10101010_10101010
-MortonEncoding.Decode(result, out var xBack, out var yBack);
-Assert.Equal(x, xBack);
-Assert.Equal(y, yBack);
+            // Take some numbers that illustrate well
+            var x = (UInt32)0b00000000_00000000;
+            var y = (UInt32)0b00000000_11111111;
+
+            // Encode
+            var result = MortonEncoding.Encode(x, y);
+
+            // Test that result is now: 0b10101010_10101010
+            Assert.Equal("1010101010101010", Convert.ToString(result, 2));
+
+            // Decode
+            MortonEncoding.Decode(result, out var xBack, out var yBack);
+
+            // Test that we got back the same values as we started with
+            Assert.Equal(x, xBack);
+            Assert.Equal(y, yBack);
         }
     }
 }
