@@ -6,12 +6,24 @@ Efficient z-order curve Morton encoder / decoder for .Net.
 
 # Example
 
-    var x = 0b00000000_00000000;
-    var y = 0b00000000_11111111;
+    // Take some numbers that illustrate well
+    var x = (UInt32)0b00000000_00000000;
+    var y = (UInt32)0b00000000_11111111;
+
+	// Encode
     var result = MortonEncoding.Encode(x, y);
-    // result is now: 0b10101010_10101010
-    MortonEncoding.Decode(result, out xBack, out yBack);
-    // xBack == x && yBack == y
+    
+    // Test that result is now: 0b10101010_10101010
+    Assert.Equal("1010101010101010", Convert.ToString(result,2));
+    
+    // Decode
+    MortonEncoding.Decode(result, out var xBack, out var yBack);
+
+    // Test that we got back the same values as we started with
+    Assert.Equal(x, xBack);
+    Assert.Equal(y, yBack);
+
+		
 
 # Hardware accelleration
 For .Net Core 3 and up CPU-instructions PEXT and PDEP are used to speed up calculations for CPU's that support [BMI2.](https://en.wikipedia.org/wiki/Bit_Manipulation_Instruction_Sets#BMI2_%28Bit_Manipulation_Instruction_Set_2%29) Most recent X86/X64 supports this.
