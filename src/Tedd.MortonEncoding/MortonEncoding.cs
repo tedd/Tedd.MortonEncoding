@@ -1,9 +1,7 @@
-﻿#if NETCOREAPP3_0 || NETCOREAPP3_1
-#define INTRINSIC
-#endif
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 #if INTRINSIC
+using System.Runtime.InteropServices;
 using X86 = System.Runtime.Intrinsics.X86;
 #endif
 
@@ -11,6 +9,7 @@ namespace Tedd
 {
     public static class MortonEncoding
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y)
         {
 #if INTRINSIC
@@ -38,6 +37,7 @@ namespace Tedd
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y)
         {
 #if INTRINSIC
@@ -63,6 +63,8 @@ namespace Tedd
 
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y, UInt32 z)
         {
 #if INTRINSIC
@@ -92,6 +94,7 @@ namespace Tedd
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y, out UInt32 z)
         {
 #if INTRINSIC
