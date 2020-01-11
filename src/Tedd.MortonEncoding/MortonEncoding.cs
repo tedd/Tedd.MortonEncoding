@@ -10,6 +10,23 @@ namespace Tedd
     public static class MortonEncoding
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SplitXY(UInt32 i, int bits, out UInt32 x, out UInt32 y)
+        {
+            var mask = ((UInt32)1 << bits) - 1;
+            x = (i >> bits) & mask;
+            y = i & mask;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SplitXYZ(UInt32 i, int bits, out UInt32 x, out UInt32 y, out UInt32 z)
+        {
+            var mask = ((UInt32)1 << bits) - 1;
+            x = (i >> (bits + bits)) & mask;
+            y = (i >> bits) & mask;
+            z = i & mask;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y)
         {
 #if INTRINSIC
