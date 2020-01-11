@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Tedd Hansen</Authors>
     <Company>Tedd Hansen</Company>
-    <Description>Morton encoding and decoding for converting 2 and 3-dimensional data to/from one dimensimon while preserving locality of the data points. In effect interleaving bits. See https://en.wikipedia.org/wiki/Z-order_curve</Description>
+    <Description>Morton encoding and decoding for converting 2 and 3-dimensional data to/from one dimension while preserving locality of the data points. In effect interleaving bits. See https://en.wikipedia.org/wiki/Z-order_curve</Description>
     <PackageTags>Morton z-order curve Lebesgue bit interleaving</PackageTags>
     <Copyright>Tedd Hansen</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -17,7 +17,7 @@
     <RepositoryType>Git</RepositoryType>
     <Version>1.0.0</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>NuGet Signing Key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
