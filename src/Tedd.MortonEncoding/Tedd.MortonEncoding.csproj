@@ -15,11 +15,12 @@
     <PackageProjectUrl>https://github.com/tedd/Tedd.MortonEncoding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tedd/Tedd.MortonEncoding</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <PackageLicenseExpression></PackageLicenseExpression>
     <SignAssembly>false</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>NuGet Signing Key.pfx</AssemblyOriginatorKeyFile>
+    <PackageReleaseNotes>SplitXY and SplitXYZ</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^netcoreapp(3|4|5|6|7|8|9)'))">

@@ -3,6 +3,7 @@ Efficient z-order curve Morton encoder / decoder for .Net.
 
 "**Z-order**, **Lebesgue curve**, **Morton space filling curve**,  **Morton order** or **Morton code** map multidimensional data to one dimension while preserving locality of the data points." [Wikipedia article](https://en.wikipedia.org/wiki/Z-order_curve).
 
+Available as NuGet package: https://www.nuget.org/packages/Tedd.MortonEncoding/
 
 # Example
 
