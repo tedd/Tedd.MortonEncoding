@@ -14,8 +14,8 @@ namespace Tedd.Benchmarks
         public void Setup()
         {
             var rand = new Random(42);
-            _x = (uint)rand.Next(0, 65536);
-            _y = (uint)rand.Next(0, 65536);
+            _x = (uint)rand.Next(0, 65535);
+            _y = (uint)rand.Next(0, 65535);
         }
 
         [Benchmark(Baseline = true)]
