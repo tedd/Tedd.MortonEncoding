@@ -17,9 +17,9 @@ namespace Tedd.Benchmarks
         public void Setup()
         {
             var rand = new Random(42);
-            _x = (uint)rand.Next(0, 65535);
-            _y = (uint)rand.Next(0, 65535);
-            _z = (uint)rand.Next(0, 1023);
+            _x = (uint)rand.Next(0, 65536);
+            _y = (uint)rand.Next(0, 65536);
+            _z = (uint)rand.Next(0, 1024);
             _encoded2d = Tedd.Legacy.MortonEncoding.Encode(_x, _y);
             _encoded3d = Tedd.Legacy.MortonEncoding.Encode(_x, _y, _z);
         }
