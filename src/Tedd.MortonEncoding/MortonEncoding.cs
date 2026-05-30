@@ -37,13 +37,13 @@ namespace Tedd
 #endif
             {
                 //x =  0x0000FFFF;
-                x = (x | x << 16) & 0x0000FFFF; // Should only shift one, right? But then we need twice as many operators?
+                x = x & 0x0000FFFF; // Eliminating redundant SHIFT and OR operations before masking top 16 bits. O(1) Time / O(1) Space.
                 x = (x | x << 8) & 0x00FF00FF;
                 x = (x | x << 4) & 0x0F0F0F0F;
                 x = (x | x << 2) & 0x33333333;
                 x = (x | x << 1) & 0x55555555;
 
-                y = (y | y << 16) & 0x0000FFFF;
+                y = y & 0x0000FFFF; // O(1) Time / O(1) Space.
                 y = (y | y << 8) & 0x00FF00FF;
                 y = (y | y << 4) & 0x0F0F0F0F;
                 y = (y | y << 2) & 0x33333333;
