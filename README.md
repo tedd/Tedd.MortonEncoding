@@ -18,7 +18,7 @@ using Tedd;
 uint x = 0b00000000_00000000;
 uint y = 0b00000000_11111111;
 
-// Execute Encapsulation
+// Execute Encoding
 uint encoded2D = MortonEncoding.Encode(x, y);
 
 // Execute Decoding
@@ -29,7 +29,7 @@ uint x3 = 10;
 uint y3 = 20;
 uint z3 = 30;
 
-// Execute 3D Encapsulation
+// Execute 3D Encoding
 uint encoded3D = MortonEncoding.Encode(x3, y3, z3);
 
 // Execute 3D Decoding
