@@ -23,7 +23,7 @@
     <PackageReleaseNotes>SplitXY and SplitXYZ</PackageReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^netcoreapp(3|4|5|6|7|8|9)'))">
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^netcoreapp(3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20)'))">
     <DefineConstants>INTRINSIC</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^net(5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20)'))">
