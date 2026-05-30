@@ -6,7 +6,7 @@ namespace Tedd.Benchmarks
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<SoftwareFallbackBenchmark>();
+            var summary = BenchmarkRunner.Run<SoftwareFallbackBenchmark>();
         }
     }
 }
