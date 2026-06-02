@@ -1,38 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462;net47;net471;net472;net48;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0;netstandard2.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
-    <!--<TargetFramework>netcoreapp3.1</TargetFramework>-->
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>net462;netstandard2.0;netstandard2.1;net8.0;net10.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Tedd Hansen</Authors>
+    <Authors>tedd</Authors>
     <Company>Tedd Hansen</Company>
-    <Description>Morton encoding and decoding for converting 2 and 3-dimensional data to/from one dimension while preserving locality of the data points. In effect interleaving bits. See https://en.wikipedia.org/wiki/Z-order_curve</Description>
-    <PackageTags>Morton z-order curve Lebesgue bit interleaving</PackageTags>
+    <Description>Morton encoding and decoding (Z-order curve) for converting 2 and 3-dimensional data to/from one dimension while preserving locality. Efficient bit interleaving.</Description>
+    <PackageTags>Morton;z-order;curve;Lebesgue;bit-interleaving;performance</PackageTags>
     <Copyright>Tedd Hansen</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/tedd/Tedd.MortonEncoding</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/tedd/Tedd.MortonEncoding</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/tedd/Tedd.MortonEncoding.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <Version>1.0.1</Version>
-    <PackageLicenseExpression></PackageLicenseExpression>
-    <SignAssembly>false</SignAssembly>
-    <DelaySign>false</DelaySign>
-    <AssemblyOriginatorKeyFile>NuGet Signing Key.pfx</AssemblyOriginatorKeyFile>
-    <PackageReleaseNotes>SplitXY and SplitXYZ</PackageReleaseNotes>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^netcoreapp(3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20)'))">
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net[56789])'))">
     <DefineConstants>INTRINSIC</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^net(5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20)'))">
-    <DefineConstants>INTRINSIC</DefineConstants>
-  </PropertyGroup>
-
 
   <ItemGroup>
-    <None Include="..\..\LICENSE">
+    <None Include="../../LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
