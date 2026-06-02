@@ -1,0 +1,45 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-test-publish:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+    - name: Setup Nuget
+      uses: Nuget/setup-nuget@v2
+
+    - name: Restore dependencies
+      working-directory: src
+      run: dotnet restore
+      
+    - name: Build
+      working-directory: src
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Test
+      working-directory: src
+      run: dotnet test --no-build --verbosity normal --configuration Release
+
+    - name: publish on version change
+      id: publish_nuget
+      uses: tedd/publish-nuget-neo@v1
+      with:
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        INCLUDE_SYMBOLS: true
+        TAG_COMMIT: true
