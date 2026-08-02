@@ -9,6 +9,7 @@
     <PackageTags>Morton;z-order;curve;Lebesgue;bit-interleaving;performance</PackageTags>
     <Copyright>Tedd Hansen</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/tedd/Tedd.MortonEncoding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tedd/Tedd.MortonEncoding.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -20,12 +21,19 @@
     <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net[56789])'))">
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net([5-9]|1[0-9]))'))">
     <DefineConstants>INTRINSIC</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="../../LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
