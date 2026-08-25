@@ -15,25 +15,25 @@ The framework natively supports both 2-dimensional (x, y) and 3-dimensional (x, 
 using Tedd;
 
 // Define spatial coordinates (2D)
-uint x = 0b00000000_00000000;
-uint y = 0b00000000_11111111;
+var x = 0b00000000_00000000u;
+var y = 0b00000000_11111111u;
 
 // Execute Encoding
-uint encoded2D = MortonEncoding.Encode(x, y);
+var encoded2D = MortonEncoding.Encode(x, y);
 
 // Execute Decoding
-MortonEncoding.Decode(encoded2D, out uint xBack, out uint yBack);
+MortonEncoding.Decode(encoded2D, out var xBack, out var yBack);
 
 // Define spatial coordinates (3D)
-uint x3 = 10;
-uint y3 = 20;
-uint z3 = 30;
+var x3 = 10u;
+var y3 = 20u;
+var z3 = 30u;
 
 // Execute 3D Encoding
-uint encoded3D = MortonEncoding.Encode(x3, y3, z3);
+var encoded3D = MortonEncoding.Encode(x3, y3, z3);
 
 // Execute 3D Decoding
-MortonEncoding.Decode(encoded3D, out uint rx, out uint ry, out uint rz);
+MortonEncoding.Decode(encoded3D, out var rx, out var ry, out var rz);
 ```
 
 ## 2. Component Isolation
@@ -42,15 +42,23 @@ The framework exposes utility functions to isolate coordinate sequences utilizin
 ```csharp
 using Tedd;
 
-uint composite = 0b11111111;
-int depth = 4;
+var composite = 0b11111111u;
+var depth = 4;
 
 // Isolate 2D components based on specified bit depth
-MortonEncoding.SplitXY(composite, depth, out uint splitX, out uint splitY);
+MortonEncoding.SplitXY(composite, depth, out var splitX, out var splitY);
 
 // Isolate 3D components based on specified bit depth
-MortonEncoding.SplitXYZ(composite, depth, out uint sx, out uint sy, out uint sz);
+MortonEncoding.SplitXYZ(composite, depth, out var sx, out var sy, out var sz);
 ```
+
+# Roadmap Hypotheses
+The following architectural enhancements represent speculative, unimplemented concepts entirely distinct from the established framework capabilities detailed above:
+- **Hierarchical Data Binding:** Integration of multi-tiered object binding constructs for spatial dimension mapping.
+- **Routed Event Infrastructure:** Propagation of structural event notifications through nested coordinate grids.
+- **Retro-Computing Context Integration:** Facilitating execution of DOS-era UI controls bound to contemporary data contexts.
+
+*Note: The preceding concepts are strictly theoretical vectors and do not reflect the current operational reality of the `Tedd.MortonEncoding` library.*
 
 # Hardware Acceleration Paradigm
 The encoding/decoding operational mechanisms automatically invoke hardware-accelerated processing vectors within modern framework iterations (.NET 5.0 through .NET 10.0+).
