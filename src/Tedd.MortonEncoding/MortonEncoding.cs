@@ -9,6 +9,11 @@ namespace Tedd
 {
     public static class MortonEncoding
     {
+        /// <summary>
+        /// Splits a composite value into X and Y components based on the specified bit depth.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SplitXY(UInt32 i, int bits, out UInt32 x, out UInt32 y)
         {
@@ -17,6 +22,11 @@ namespace Tedd
             y = i & mask;
         }
 
+        /// <summary>
+        /// Splits a composite value into X, Y, and Z components based on the specified bit depth.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SplitXYZ(UInt32 i, int bits, out UInt32 x, out UInt32 y, out UInt32 z)
         {
@@ -26,6 +36,11 @@ namespace Tedd
             z = i & mask;
         }
 
+        /// <summary>
+        /// Encodes 2D coordinates into a Morton scalar index.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y)
         {
@@ -40,6 +55,11 @@ namespace Tedd
             }
         }
 
+        /// <summary>
+        /// Software fallback path to encode 2D coordinates into a Morton scalar index.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 EncodeFallback(UInt32 x, UInt32 y)
         {
@@ -58,6 +78,11 @@ namespace Tedd
             return x | (y << 1);
         }
 
+        /// <summary>
+        /// Decodes a Morton scalar index into 2D coordinates.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y)
         {
@@ -74,6 +99,11 @@ namespace Tedd
             }
         }
 
+        /// <summary>
+        /// Software fallback path to decode a Morton scalar index into 2D coordinates.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DecodeFallback(UInt32 morton, out UInt32 x, out UInt32 y)
         {
@@ -90,6 +120,11 @@ namespace Tedd
             y = (y ^ (y >> 8)) & 0x0000FFFF;
         }
 
+        /// <summary>
+        /// Encodes 3D coordinates into a Morton scalar index.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y, UInt32 z)
         {
@@ -105,6 +140,11 @@ namespace Tedd
             }
         }
 
+        /// <summary>
+        /// Software fallback path to encode 3D coordinates into a Morton scalar index.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 EncodeFallback(UInt32 x, UInt32 y, UInt32 z)
         {
@@ -126,6 +166,11 @@ namespace Tedd
             return x | (y << 1) | (z << 2);
         }
 
+        /// <summary>
+        /// Decodes a Morton scalar index into 3D coordinates.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y, out UInt32 z)
         {
@@ -143,6 +188,11 @@ namespace Tedd
             }
         }
 
+        /// <summary>
+        /// Software fallback path to decode a Morton scalar index into 3D coordinates.
+        /// Time Complexity: O(1)
+        /// Space Complexity: O(1)
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DecodeFallback(UInt32 morton, out UInt32 x, out UInt32 y, out UInt32 z)
         {
