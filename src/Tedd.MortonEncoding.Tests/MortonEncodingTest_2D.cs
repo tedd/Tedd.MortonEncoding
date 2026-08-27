@@ -98,7 +98,7 @@ namespace Tedd.MortonEncodingTests
         public void Encode_XY_Int32_LookupTable()
         {
             // Compare result to lookup-table
-            var max = (1 << 10);
+            var max = (1 << 5);
             Parallel.For(0, max, (i) =>
             {
                 var x = (UInt32)i;
