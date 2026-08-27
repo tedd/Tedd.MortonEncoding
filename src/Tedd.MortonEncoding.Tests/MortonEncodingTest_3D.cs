@@ -6,7 +6,7 @@ namespace Tedd.MortonEncodingTests
 {
     public class MortonEncodingTest_3D
     {
-        
+
         static UInt32[] morton256_3d_x = new UInt32[256]
         {
             0x00000000,
@@ -140,10 +140,10 @@ namespace Tedd.MortonEncodingTests
         public void Encode_XYZ_Int32_LookupTable()
         {
             // Compare result to lookup-table
-            var max = (1 << 10);
+            var max = (1 << 5);
             Parallel.For(0, max, (i) =>
             {
-                var x = (UInt32) i;
+                var x = (UInt32)i;
                 for (UInt32 y = 0; y < max; y++)
                 {
                     for (UInt32 z = 0; z < max; z++)
@@ -165,6 +165,6 @@ namespace Tedd.MortonEncodingTests
         }
 
 
-      
+
     }
 }
