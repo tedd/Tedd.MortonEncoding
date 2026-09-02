@@ -1,0 +1,5 @@
+## 2024-09-02 - TargetFramework Regex Update and Dependency Modernization
+
+**Observation:** The MSBuild `INTRINSIC` constant conditional Regex `^(netcoreapp3|net[56789])` failed to match `.NET 10.0+` framework targets, preventing hardware acceleration compilation paths. Package metadata lacked a README reference. Additionally, the test runner dependencies were outdated and `Tedd.MortonEncoding.DotNet4Tests` was targeting `net461` which was misaligned with the main project's minimum framework target `net462` and unsupported by xUnit test runners. `xunit.runner.visualstudio` 3.0+ drops support for `net462`.
+
+**Strategic Action:** Updated `Tedd.MortonEncoding.csproj` MSBuild TargetFramework Regex to `^(netcoreapp3|net([5-9]|1[0-9]))` to support `.NET 10.0+`. Added `<PackageReadmeFile>README.md</PackageReadmeFile>` and included it in the `ItemGroup`. Changed `Tedd.MortonEncoding.DotNet4Tests` target to `net462` and upgraded test dependencies to their latest compatible versions (`xunit.runner.visualstudio` constrained to `2.8.2` for `net462` compatibility).
