@@ -18,14 +18,19 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net[56789])'))">
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net([5-9]|1[0-9]))'))">
     <DefineConstants>INTRINSIC</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="../../LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="../../README.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
