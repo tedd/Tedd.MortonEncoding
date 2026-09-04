@@ -17,8 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          6.0.x
           8.0.x
+          10.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
     - name: Setup Nuget
@@ -37,9 +37,12 @@ jobs:
       run: dotnet test --no-build --verbosity normal --configuration Release
 
     - name: publish on version change
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       id: publish_nuget
-      uses: tedd/publish-nuget-neo@v1
+      uses: tedd/publish-nuget-neo@2fb049d98af0487a16b625ec9b137bb7332d68f1 # v1
       with:
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+        PROJECT_FILE_PATH: src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj
         INCLUDE_SYMBOLS: true
         TAG_COMMIT: true
+        REBUILD_PROJECT: false

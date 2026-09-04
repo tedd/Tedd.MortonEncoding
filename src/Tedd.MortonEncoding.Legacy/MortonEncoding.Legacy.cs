@@ -1,7 +1,15 @@
 using System;
 using System.Runtime.CompilerServices;
+#if INTRINSIC
+using System.Runtime.InteropServices;
+using X86 = System.Runtime.Intrinsics.X86;
+#endif
 
-namespace Tedd.Legacy
+// Archived from the published 1.0.1 package and release-era commit e93d4a2.
+// The namespace is the only intentional API/source change; it prevents a
+// collision with the live Tedd.MortonEncoding type. The later v1.0.1 tag is
+// not used because it points at a post-release optimized revision.
+namespace Tedd.MortonEncodingArchive.V1_0_1
 {
     public static class MortonEncoding
     {
@@ -25,6 +33,12 @@ namespace Tedd.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y)
         {
+#if INTRINSIC
+            if (X86.Bmi2.IsSupported)
+                return X86.Bmi2.ParallelBitDeposit(y, 0xAAAAAAAA)
+                     | X86.Bmi2.ParallelBitDeposit(x, 0x55555555);
+            else
+#endif
             {
                 //x =  0x0000FFFF;
                 x = (x | x << 16) & 0x0000FFFF; // Should only shift one, right? But then we need twice as many operators?
@@ -47,6 +61,14 @@ namespace Tedd.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y)
         {
+#if INTRINSIC
+            if (X86.Bmi2.IsSupported)
+            {
+                x = X86.Bmi2.ParallelBitExtract(morton, 0x55555555);
+                y = X86.Bmi2.ParallelBitExtract(morton, 0xAAAAAAAA);
+            }
+            else
+#endif
             {
                 x = morton & 0x55555555;
                 x = (x ^ (x >> 1)) & 0x33333333;
@@ -66,6 +88,13 @@ namespace Tedd.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UInt32 Encode(UInt32 x, UInt32 y, UInt32 z)
         {
+#if INTRINSIC
+            if (X86.Bmi2.IsSupported)
+                return X86.Bmi2.ParallelBitDeposit(z, 0x24924924)
+                     | X86.Bmi2.ParallelBitDeposit(y, 0x12492492)
+                     | X86.Bmi2.ParallelBitDeposit(x, 0x09249249);
+            else
+#endif
             {
                 x = (x | (x << 16)) & 0x030000FF;
                 x = (x | (x << 8)) & 0x0300F00F;
@@ -89,6 +118,15 @@ namespace Tedd.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Decode(UInt32 morton, out UInt32 x, out UInt32 y, out UInt32 z)
         {
+#if INTRINSIC
+            if (X86.Bmi2.IsSupported)
+            {
+                x = X86.Bmi2.ParallelBitExtract(morton, 0x09249249);
+                y = X86.Bmi2.ParallelBitExtract(morton, 0x12492492);
+                z = X86.Bmi2.ParallelBitExtract(morton, 0x24924924);
+            }
+            else
+#endif
             {
                 x = morton & 0x9249249;
                 x = (x ^ (x >> 2)) & 0x30c30c3;

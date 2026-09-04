@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tedd.MortonEncoding.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tedd.MortonEncoding.DotNet4Tests", "Tedd.MortonEncoding.DotNet4Tests\Tedd.MortonEncoding.DotNet4Tests.csproj", "{3907A204-B5AF-481F-B0B9-639D61841BB3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tedd.MortonEncoding.Legacy", "Tedd.MortonEncoding.Legacy\Tedd.MortonEncoding.Legacy.csproj", "{2B2A0CB1-0AB3-45C7-A18B-096D96D25F43}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tedd.MortonEncoding.Benchmarks", "Tedd.MortonEncoding.Benchmarks\Tedd.MortonEncoding.Benchmarks.csproj", "{4A275348-0EF9-4F1E-83EA-B21FBD8B28C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{3907A204-B5AF-481F-B0B9-639D61841BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3907A204-B5AF-481F-B0B9-639D61841BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3907A204-B5AF-481F-B0B9-639D61841BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B2A0CB1-0AB3-45C7-A18B-096D96D25F43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B2A0CB1-0AB3-45C7-A18B-096D96D25F43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B2A0CB1-0AB3-45C7-A18B-096D96D25F43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B2A0CB1-0AB3-45C7-A18B-096D96D25F43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A275348-0EF9-4F1E-83EA-B21FBD8B28C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A275348-0EF9-4F1E-83EA-B21FBD8B28C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A275348-0EF9-4F1E-83EA-B21FBD8B28C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A275348-0EF9-4F1E-83EA-B21FBD8B28C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
