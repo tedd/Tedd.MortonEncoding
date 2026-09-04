@@ -1,34 +1,54 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;netstandard2.1;net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard1.0;netstandard2.0;netcoreapp3.0;net8.0;net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>tedd</Authors>
+    <IsPackable>true</IsPackable>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.0.1</PackageValidationBaselineVersion>
+    <PackageId>Tedd.MortonEncoding</PackageId>
+    <Version>1.1.0</Version>
+    <Authors>Tedd Hansen</Authors>
     <Company>Tedd Hansen</Company>
-    <Description>Morton encoding and decoding (Z-order curve) for converting 2 and 3-dimensional data to/from one dimension while preserving locality. Efficient bit interleaving.</Description>
-    <PackageTags>Morton;z-order;curve;Lebesgue;bit-interleaving;performance</PackageTags>
+    <Title>Morton encoding for .NET</Title>
+    <Description>Allocation-free 32-bit and 64-bit Morton encoding and decoding (Z-order curves) for two- and three-dimensional unsigned coordinates, with automatic BMI2 acceleration.</Description>
+    <PackageTags>Morton;z-order;curve;Lebesgue;bit-interleaving;spatial-index;performance</PackageTags>
     <Copyright>Tedd Hansen</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/tedd/Tedd.MortonEncoding</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tedd/Tedd.MortonEncoding.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.0.1</Version>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <PackageReleaseNotes>Adds 64-bit 2D and 3D APIs, restores target-framework compatibility, enables BMI2 on .NET 10, fixes 3D fallback masking, and expands tests and benchmarks.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest-all</AnalysisLevel>
+    <NoWarn>$(NoWarn);IDE0130;NETSDK1215</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', '^(netcoreapp3|net[56789])'))">
-    <DefineConstants>INTRINSIC</DefineConstants>
+  <PropertyGroup Condition="'$(CI)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- NETStandard.Library 1.6.1 requests vulnerable System.Text.RegularExpressions 4.3.0. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
 
   <ItemGroup>
-    <None Include="../../LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
 </Project>

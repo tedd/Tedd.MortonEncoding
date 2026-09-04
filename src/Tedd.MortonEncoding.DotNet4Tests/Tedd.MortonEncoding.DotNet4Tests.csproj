@@ -4,18 +4,26 @@
     <TargetFramework>net461</TargetFramework>
 
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Tedd.MortonEncoding.Tests\MortonEncodingTest_2D.cs" Link="MortonEncodingTest_2D.cs" />
-    <Compile Include="..\Tedd.MortonEncoding.Tests\MortonEncodingTest_3D.cs" Link="MortonEncodingTest_3D.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\ReferenceMorton.cs" Link="ReferenceMorton.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\MortonEncoding2DTests.cs" Link="MortonEncoding2DTests.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\MortonEncoding3DTests.cs" Link="MortonEncoding3DTests.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\MortonEncodingVectorTests.cs" Link="MortonEncodingVectorTests.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\DispatcherAndFallbackTests.cs" Link="DispatcherAndFallbackTests.cs" />
+    <Compile Include="..\Tedd.MortonEncoding.Tests\SplitBoundaryTests.cs" Link="SplitBoundaryTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net461" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
