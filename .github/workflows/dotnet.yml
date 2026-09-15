@@ -58,6 +58,8 @@ jobs:
           dotnet-version: |
             8.0.x
             10.0.x
+      - name: Restore
+        run: dotnet restore src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj
 
       - name: Set automatic package version
         id: version
@@ -81,6 +83,8 @@ jobs:
       # Pin the current publish-nuget-neo implementation because the v1 tag refers
       # to an obsolete release.
       - name: Publish on version change
+        id: publish_nuget
+        continue-on-error: true
         uses: tedd/publish-nuget-neo@1a65ed85a859c9f4905b61c58afe6b1dcbb74ae4
         with:
           NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -92,3 +96,44 @@ jobs:
           TAG_FORMAT: v*
           REBUILD_PROJECT: false
           LOG_LEVEL: INFO
+
+      # The action suppresses the package-command diagnostic when dotnet exits
+      # unsuccessfully. A direct retry preserves the diagnostic, handles a
+      # transient failure, completes symbol publication, and creates the tag.
+      - name: Retry failed publish
+        if: steps.publish_nuget.outcome == 'failure'
+        shell: pwsh
+        env:
+          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+          PACKAGE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $projectPath = 'src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj'
+          $packageDirectory = 'src/Tedd.MortonEncoding'
+
+          dotnet pack $projectPath -c Release --no-restore -o $packageDirectory -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+          if ($LASTEXITCODE -ne 0) {
+            throw "Package creation failed with exit code $LASTEXITCODE."
+          }
+
+          $packages = @(
+            Get-Item -LiteralPath "$packageDirectory/Tedd.MortonEncoding.$env:PACKAGE_VERSION.nupkg"
+            Get-Item -LiteralPath "$packageDirectory/Tedd.MortonEncoding.$env:PACKAGE_VERSION.snupkg"
+          )
+          foreach ($package in $packages) {
+            dotnet nuget push $package.FullName --source https://api.nuget.org/v3/index.json --api-key $env:NUGET_KEY --skip-duplicate
+            if ($LASTEXITCODE -ne 0) {
+              throw "NuGet publish failed for $($package.Name) with exit code $LASTEXITCODE."
+            }
+          }
+
+          $tag = "v$env:PACKAGE_VERSION"
+          if (-not (git tag --list $tag)) {
+            git tag $tag
+            if ($LASTEXITCODE -ne 0) {
+              throw "Creating tag $tag failed."
+            }
+          }
+          git push origin $tag
+          if ($LASTEXITCODE -ne 0) {
+            throw "Pushing tag $tag failed."
+          }
