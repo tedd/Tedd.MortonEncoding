@@ -80,6 +80,9 @@ jobs:
           "version=$packageVersion" >> $env:GITHUB_OUTPUT
           Write-Host "Publishing Tedd.MortonEncoding $packageVersion"
 
+      - name: Build versioned package assemblies
+        run: dotnet build src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj --no-restore --configuration Release
+
       # Pin the current publish-nuget-neo implementation because the v1 tag refers
       # to an obsolete release.
       - name: Publish on version change
@@ -110,7 +113,7 @@ jobs:
           $projectPath = 'src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj'
           $packageDirectory = 'src/Tedd.MortonEncoding'
 
-          dotnet pack $projectPath -c Release --no-restore -o $packageDirectory -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+          dotnet pack $projectPath -c Release --no-build --no-restore -o $packageDirectory -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
           if ($LASTEXITCODE -ne 0) {
             throw "Package creation failed with exit code $LASTEXITCODE."
           }
