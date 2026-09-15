@@ -1,48 +1,94 @@
-name: .NET
+name: .NET build, test, and NuGet publish
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [main, deploy]
   pull_request:
-    branches: [ master, main ]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dotnet-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build-test-publish:
+  build-test:
+    name: Build and test
     runs-on: windows-latest
+
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: |
-          8.0.x
-          10.0.x
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v2
-    - name: Setup Nuget
-      uses: Nuget/setup-nuget@v2
+      - uses: actions/checkout@v5
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+      - name: Restore
+        run: dotnet restore src/Tedd.MortonEncoding.sln
+      - name: Build
+        run: dotnet build src/Tedd.MortonEncoding.sln --no-restore --configuration Release
+      - name: Test
+        run: dotnet test src/Tedd.MortonEncoding.sln --no-build --configuration Release --verbosity normal
+      - name: Verify package
+        run: dotnet pack src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj --no-build --configuration Release --output artifacts/packages
 
-    - name: Restore dependencies
-      working-directory: src
-      run: dotnet restore
-      
-    - name: Build
-      working-directory: src
-      run: dotnet build --no-restore --configuration Release
-      
-    - name: Test
-      working-directory: src
-      run: dotnet test --no-build --verbosity normal --configuration Release
+  publish:
+    name: Publish to NuGet
+    if: github.event_name == 'push' && github.ref == 'refs/heads/deploy'
+    needs: build-test
+    runs-on: windows-latest
+    permissions:
+      contents: write
 
-    - name: publish on version change
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      id: publish_nuget
-      uses: tedd/publish-nuget-neo@2fb049d98af0487a16b625ec9b137bb7332d68f1 # v1
-      with:
-        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-        PROJECT_FILE_PATH: src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj
-        INCLUDE_SYMBOLS: true
-        TAG_COMMIT: true
-        REBUILD_PROJECT: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Set automatic package version
+        id: version
+        shell: pwsh
+        run: |
+          $projectPath = 'src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj'
+          $project = [xml](Get-Content -LiteralPath $projectPath)
+          $versionNode = $project.SelectSingleNode('/Project/PropertyGroup/Version')
+          if ($null -eq $versionNode) {
+            throw "No Version element found in $projectPath."
+          }
+
+          $baseVersion = [version]$versionNode.InnerText
+          # A workflow rerun retains its version; each new deploy run advances the patch.
+          $packageVersion = '{0}.{1}.{2}' -f $baseVersion.Major, $baseVersion.Minor, ($baseVersion.Build + [int]$env:GITHUB_RUN_NUMBER)
+          $versionNode.InnerText = $packageVersion
+          $project.Save((Resolve-Path -LiteralPath $projectPath))
+          "version=$packageVersion" >> $env:GITHUB_OUTPUT
+          Write-Host "Publishing Tedd.MortonEncoding $packageVersion"
+
+      # Pin the current publish-nuget-neo implementation because the v1 tag refers
+      # to an obsolete release.
+      - name: Publish on version change
+        uses: tedd/publish-nuget-neo@1a65ed85a859c9f4905b61c58afe6b1dcbb74ae4
+        with:
+          NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+          PROJECT_FILE_PATH: src/Tedd.MortonEncoding/Tedd.MortonEncoding.csproj
+          PACKAGE_NAME: Tedd.MortonEncoding
+          NUGET_SOURCE: https://api.nuget.org
+          INCLUDE_SYMBOLS: true
+          TAG_COMMIT: true
+          TAG_FORMAT: v*
+          REBUILD_PROJECT: false
+          LOG_LEVEL: INFO

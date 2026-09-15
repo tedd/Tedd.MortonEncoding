@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7faf9">
+  <meta name="description" content="Allocation-free two- and three-dimensional Morton encoding for .NET, with 32-bit and 64-bit codes and automatic BMI2 acceleration.">
+  <title>Tedd.MortonEncoding — Morton codes for .NET</title>
+  <link rel="icon" href="assets/morton-mark.svg" type="image/svg+xml">
+  <script>document.documentElement.classList.add("js")</script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Tedd.MortonEncoding home">
+      <img src="assets/morton-mark.svg" width="34" height="34" alt="">
+      <span>TEDD<span class="brand-slash">/</span>MORTON</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#capacity">Capacity</a>
+      <a href="#implementation">Implementation</a>
+      <a href="#frameworks">Frameworks</a>
+      <a href="https://github.com/tedd/Tedd.MortonEncoding">Source</a>
+      <a class="nav-cta" href="#install">Install</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Morton codes for .NET</p>
+        <h1>Interleave coordinates.<br><em>Preserve locality.</em></h1>
+        <p class="lede">Encode two- and three-dimensional unsigned coordinates as compact Z-order values. The API is allocation-free and selects BMI2 intrinsics when the processor supports them.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://www.nuget.org/packages/Tedd.MortonEncoding/">
+            <span>View on NuGet</span><span aria-hidden="true">↗</span>
+          </a>
+          <a class="button secondary" href="#usage">View API examples</a>
+        </div>
+        <ul class="hero-checks" aria-label="Library properties">
+          <li>Two and three dimensions</li>
+          <li>32-bit and 64-bit codes</li>
+          <li>LGPL 2.1 licensed</li>
+        </ul>
+      </div>
+
+      <section class="encoder" aria-labelledby="encoder-title">
+        <div class="encoder-head">
+          <div>
+            <span>INTERACTIVE ENCODER</span>
+            <h2 id="encoder-title">Inspect the bit interleave.</h2>
+          </div>
+          <span class="status-dot">Exact integer arithmetic</span>
+        </div>
+
+        <div class="mode-tabs" role="group" aria-label="Encoding mode">
+          <button type="button" class="active" data-mode="2d32">2D · 32-bit</button>
+          <button type="button" data-mode="3d32">3D · 32-bit</button>
+          <button type="button" data-mode="2d64">2D · 64-bit</button>
+          <button type="button" data-mode="3d64">3D · 64-bit</button>
+        </div>
+
+        <div class="coordinate-inputs">
+          <label>X <input id="coordinate-x" type="number" min="0" value="5" inputmode="numeric"></label>
+          <label>Y <input id="coordinate-y" type="number" min="0" value="3" inputmode="numeric"></label>
+          <label class="z-input" hidden>Z <input id="coordinate-z" type="number" min="0" value="2" inputmode="numeric"></label>
+        </div>
+
+        <div class="curve-frame">
+          <svg id="morton-curve" viewBox="0 0 520 520" role="img" aria-label="Z-order traversal of an eight by eight grid"></svg>
+          <p>Low three bits of X and Y</p>
+        </div>
+
+        <dl class="encoder-output">
+          <div><dt>Method</dt><dd id="method-output">Encode(x, y)</dd></div>
+          <div><dt>Decimal</dt><dd id="decimal-output">27</dd></div>
+          <div><dt>Hexadecimal</dt><dd id="hex-output">0x0000001B</dd></div>
+          <div class="bit-output"><dt>Binary</dt><dd id="binary-output">0000 0000 0000 0000 0000 0000 0001 1011</dd></div>
+        </dl>
+        <p class="encoder-note" id="capacity-output">Each coordinate uses its least significant 16 bits.</p>
+      </section>
+    </section>
+
+    <section class="proof-strip" aria-label="Library summary">
+      <p><strong>2D + 3D</strong><span>Coordinate overloads</span></p>
+      <p><strong>32 + 64 bit</strong><span>Morton code widths</span></p>
+      <p><strong>BMI2</strong><span>Automatic PDEP and PEXT dispatch</span></p>
+      <p><strong>0 allocations</strong><span>Static value-type API</span></p>
+    </section>
+
+    <section class="capacity section-shell" id="capacity">
+      <div class="section-intro reveal">
+        <div>
+          <p class="eyebrow">Defined coordinate capacity</p>
+          <h2>Select the code width for the data domain.</h2>
+        </div>
+        <p>Morton encoding distributes each coordinate across fixed bit lanes. Unsupported high coordinate bits are masked to keep the hot path free of validation branches.</p>
+      </div>
+
+      <div class="capacity-table-wrap reveal">
+        <table>
+          <thead>
+            <tr><th>API</th><th>Dimensions</th><th>Capacity per axis</th><th>Morton code</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>Encode</code> / <code>Decode</code></td><td>2D</td><td><strong>16 bits</strong><span>0–65,535</span></td><td><code>uint</code></td></tr>
+            <tr><td><code>Encode</code> / <code>Decode</code></td><td>3D</td><td><strong>10 bits</strong><span>0–1,023</span></td><td><code>uint</code></td></tr>
+            <tr><td><code>Encode64</code> / <code>Decode64</code></td><td>2D</td><td><strong>32 bits</strong><span>full <code>uint</code> range</span></td><td><code>ulong</code></td></tr>
+            <tr><td><code>Encode64</code> / <code>Decode64</code></td><td>3D</td><td><strong>21 bits</strong><span>0–2,097,151</span></td><td><code>ulong</code><span>bit 63 unused</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lane-diagram reveal" role="group" aria-label="Bit-lane arrangement">
+        <div class="lane-copy">
+          <p class="eyebrow">Lane assignment</p>
+          <h3>Adjacent output bits identify adjacent axes.</h3>
+          <p>X occupies bit positions 0, 2, 4, … in two dimensions and 0, 3, 6, … in three dimensions. Y and Z occupy the subsequent positions in each group.</p>
+        </div>
+        <div class="lane-bits" aria-hidden="true">
+          <div><span class="x">X₃</span><span class="y">Y₃</span><span class="x">X₂</span><span class="y">Y₂</span><span class="x">X₁</span><span class="y">Y₁</span><span class="x">X₀</span><span class="y">Y₀</span></div>
+          <small>most significant shown bit <i></i> least significant bit</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage section-shell" id="usage">
+      <div class="usage-copy reveal">
+        <p class="eyebrow">Small surface area</p>
+        <h2>Encode, store, and recover coordinates.</h2>
+        <p>The static API accepts unsigned integers and returns unsigned Morton codes. Decoders write coordinates through <code>out</code> parameters.</p>
+        <ul>
+          <li><strong>No object lifecycle.</strong> Call static methods directly.</li>
+          <li><strong>No managed allocation.</strong> Inputs and outputs are value types.</li>
+          <li><strong>Explicit software path.</strong> Fallback methods are available for deterministic comparison.</li>
+        </ul>
+      </div>
+
+      <div class="code-panel reveal">
+        <div class="code-panel-head"><span>C#</span><button type="button" class="copy-code" data-copy-target="usage-code">Copy</button></div>
+        <pre id="usage-code"><code><span class="kw">using</span> Tedd;
+
+<span class="type">uint</span> x = <span class="num">10</span>;
+<span class="type">uint</span> y = <span class="num">20</span>;
+
+<span class="type">uint</span> code = MortonEncoding.Encode(x, y);
+MortonEncoding.Decode(code,
+    <span class="kw">out</span> <span class="type">uint</span> decodedX,
+    <span class="kw">out</span> <span class="type">uint</span> decodedY);
+
+<span class="type">ulong</span> code3D = MortonEncoding.Encode64(
+    <span class="num">1_000_000</span>, <span class="num">1_500_000</span>, <span class="num">2_000_000</span>);</code></pre>
+      </div>
+    </section>
+
+    <section class="implementation section-shell" id="implementation">
+      <div class="section-intro reveal">
+        <div>
+          <p class="eyebrow">Runtime-selected implementation</p>
+          <h2>One API. Two execution paths.</h2>
+        </div>
+        <p>The dispatcher selects an implementation from processor capability and target framework. The encoded representation remains identical.</p>
+      </div>
+
+      <div class="path-grid">
+        <article class="path-card accelerated reveal">
+          <span class="path-number">01</span>
+          <p class="card-kicker">Supported x86 and x64 processors</p>
+          <h3>BMI2 intrinsics</h3>
+          <p>Concrete .NET Core and modern .NET assets use <code>PDEP</code> for encoding and <code>PEXT</code> for decoding when BMI2 is available.</p>
+          <div class="instruction"><span>PDEP</span><i></i><span>INTERLEAVE</span><i></i><span>PEXT</span></div>
+        </article>
+        <article class="path-card reveal">
+          <span class="path-number">02</span>
+          <p class="card-kicker">Portable and non-BMI2 environments</p>
+          <h3>Shift-and-mask software</h3>
+          <p>The portable assets use deterministic bit spreading and compaction. The fallback methods expose this path directly.</p>
+          <div class="instruction portable"><span>SHIFT</span><i></i><span>MASK</span><i></i><span>MERGE</span></div>
+        </article>
+      </div>
+
+      <a class="benchmark-link reveal" href="https://github.com/tedd/Tedd.MortonEncoding/blob/main/src/Tedd.MortonEncoding.Benchmarks/BENCHMARKS.md">
+        <span>Benchmark methodology</span>
+        <strong>Review hypotheses, controls, and interpretation <b aria-hidden="true">↗</b></strong>
+      </a>
+    </section>
+
+    <section class="frameworks section-shell" id="frameworks">
+      <div class="framework-heading reveal">
+        <p class="eyebrow">Broad runtime coverage</p>
+        <h2>Use the package from established and current .NET applications.</h2>
+      </div>
+      <div class="framework-list reveal" role="group" aria-label="Supported target frameworks">
+        <div><span>NET461</span><strong>.NET Framework 4.6.1</strong><small>Portable software path</small></div>
+        <div><span>NETSTANDARD1.0</span><strong>.NET Standard 1.0</strong><small>Broad compatibility</small></div>
+        <div><span>NETSTANDARD2.0</span><strong>.NET Standard 2.0</strong><small>Broad compatibility</small></div>
+        <div><span>NETCOREAPP3.0</span><strong>.NET Core 3.0</strong><small>BMI2 when supported</small></div>
+        <div><span>NET8.0</span><strong>.NET 8</strong><small>BMI2 when supported</small></div>
+        <div><span>NET10.0</span><strong>.NET 10</strong><small>BMI2 when supported</small></div>
+      </div>
+    </section>
+
+    <section class="install section-shell" id="install">
+      <div class="install-card reveal">
+        <div>
+          <p class="eyebrow">NuGet package</p>
+          <h2>Add Morton encoding to the project.</h2>
+          <p>Install the current stable package from NuGet.org. Package symbols and XML documentation are included.</p>
+        </div>
+        <div class="install-command">
+          <span>TERMINAL</span>
+          <code id="install-code">dotnet add package Tedd.MortonEncoding</code>
+          <button type="button" class="copy-code" data-copy-target="install-code">Copy</button>
+        </div>
+        <div class="install-actions">
+          <a class="button primary" href="https://www.nuget.org/packages/Tedd.MortonEncoding/">Open NuGet package <span aria-hidden="true">↗</span></a>
+          <a class="button dark-secondary" href="https://github.com/tedd/Tedd.MortonEncoding">Browse source</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#top"><img src="assets/morton-mark.svg" width="28" height="28" alt=""><span>TEDD<span class="brand-slash">/</span>MORTON</span></a>
+    <p>Morton encoding for .NET. LGPL 2.1 licensed.</p>
+    <div><a href="https://www.nuget.org/packages/Tedd.MortonEncoding/">NuGet</a><a href="https://github.com/tedd/Tedd.MortonEncoding">Source</a><a href="https://github.com/tedd/Tedd.MortonEncoding/blob/main/LICENSE">License</a></div>
+  </footer>
+</body>
+</html>

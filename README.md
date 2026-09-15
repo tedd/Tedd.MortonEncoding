@@ -2,7 +2,7 @@
 
 Allocation-free Morton encoding and decoding (Z-order curves) for .NET.
 
-[NuGet](https://www.nuget.org/packages/Tedd.MortonEncoding/) · [Benchmark methodology](https://github.com/tedd/Tedd.MortonEncoding/blob/main/src/Tedd.MortonEncoding.Benchmarks/BENCHMARKS.md)
+[Website](https://tedd.github.io/Tedd.MortonEncoding/) · [NuGet](https://www.nuget.org/packages/Tedd.MortonEncoding/) · [Benchmark methodology](https://github.com/tedd/Tedd.MortonEncoding/blob/main/src/Tedd.MortonEncoding.Benchmarks/BENCHMARKS.md)
 
 ## Install
 
@@ -87,4 +87,4 @@ The shift-and-mask constants derive from the bit-interleaving techniques describ
 
 ## License
 
-[MIT](https://github.com/tedd/Tedd.MortonEncoding/blob/main/LICENSE)
+[GNU Lesser General Public License 2.1](https://github.com/tedd/Tedd.MortonEncoding/blob/main/LICENSE)

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Morton Z-order mark">
+  <rect width="64" height="64" rx="12" fill="#087f78"/>
+  <path d="M13 13h14v14H13zm24 0h14v14H37zM13 37h14v14H13zm24 0h14v14H37z" fill="#dff4f0" opacity=".24"/>
+  <path d="M17 47V35h18V17h12v30H29V29H17V17h12" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
