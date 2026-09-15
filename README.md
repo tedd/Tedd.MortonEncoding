@@ -7,7 +7,7 @@ Allocation-free Morton encoding and decoding (Z-order curves) for .NET.
 ## Install
 
 ```shell
-dotnet add package Tedd.MortonEncoding --version 1.1.0
+dotnet add package Tedd.MortonEncoding
 ```
 
 ## Capacity
