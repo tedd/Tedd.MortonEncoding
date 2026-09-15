@@ -2,7 +2,7 @@
 
 Allocation-free Morton encoding and decoding (Z-order curves) for .NET.
 
-[Website](https://tedd.github.io/Tedd.MortonEncoding/) · [NuGet](https://www.nuget.org/packages/Tedd.MortonEncoding/) · [Benchmark methodology](https://github.com/tedd/Tedd.MortonEncoding/blob/main/src/Tedd.MortonEncoding.Benchmarks/BENCHMARKS.md)
+[Website](https://tedd.no/Tedd.MortonEncoding/) · [NuGet](https://www.nuget.org/packages/Tedd.MortonEncoding/) · [Benchmark methodology](https://github.com/tedd/Tedd.MortonEncoding/blob/main/src/Tedd.MortonEncoding.Benchmarks/BENCHMARKS.md)
 
 ## Install
 
