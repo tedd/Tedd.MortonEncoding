@@ -146,13 +146,15 @@ h1 em { color: transparent; font-style: normal; -webkit-text-stroke: 1.5px #6981
 .cache-lines { display: grid; gap: .35rem; }
 .cache-line { display: grid; grid-template-columns: 3.8rem repeat(8, minmax(0, 1fr)); gap: 2px; }
 .cache-line-label { display: grid; place-items: center start; padding-left: .4rem; color: #7a8e92; background: #eaf1ef; font: 500 .56rem var(--mono); }
-.memory-cell { aspect-ratio: 1.12; display: grid; place-items: center; color: #839498; background: #e8efed; border: 1px solid transparent; font: 500 clamp(.48rem, .62vw, .62rem) var(--mono); transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease; }
+.memory-cell { aspect-ratio: 1.12; display: grid; place-items: center; padding: 0; color: #839498; background: #e8efed; border: 1px solid transparent; cursor: pointer; font: 500 clamp(.48rem, .62vw, .62rem) var(--mono); transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease; }
+.memory-cell:hover, .memory-cell:focus-visible { position: relative; z-index: 2; border-color: #496d72; outline: 2px solid #496d72; outline-offset: 1px; }
 .memory-cell.target { color: #267a75; background: #d9efeb; border-color: #b3ddd6; }
 .memory-layout[data-layout="row"] .memory-cell.target { color: #91502b; background: #f3e2d7; border-color: #e3c0aa; }
 .memory-cell.visited { color: #fff; background: var(--aqua); border-color: var(--aqua); }
 .memory-layout[data-layout="row"] .memory-cell.visited { background: var(--orange); border-color: var(--orange); }
 .memory-cell.current { position: relative; z-index: 1; color: #10262c; background: #8ee1d7; border-color: #e5fffb; outline: 2px solid #10262c; transform: scale(1.08); }
 .memory-layout[data-layout="row"] .memory-cell.current { color: #30150a; background: #efb287; border-color: #fff3eb; }
+.memory-cell.selected { position: relative; z-index: 3; color: #10262c; background: #93c5f4; border-color: #e5f5ff; outline: 2px solid #10262c; transform: scale(1.1); }
 .cache-line.line-active .cache-line-label { color: #fff; background: #426f6c; }
 .memory-layout[data-layout="row"] .cache-line.line-active .cache-line-label { background: #8a5c42; }
 .cache-conclusion { display: grid; grid-template-columns: .38fr .38fr 1.24fr; gap: 1px; margin-top: 1.5rem; background: #cfded9; border: 1px solid #cfded9; }

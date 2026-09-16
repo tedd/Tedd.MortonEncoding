@@ -31,6 +31,7 @@
   });
   const targetKeys = new Set(targetCoordinates.map(({ x, y, z }) => `${x}:${y}:${z}`));
   let activeStep = -1;
+  let selectedCoordinate = null;
   let animationTimer = 0;
   let dragging = false;
   let previousPointer = { x: 0, y: 0 };
@@ -43,6 +44,29 @@
         pointByKey.set(point.key, point);
       }
     }
+  }
+
+  function mortonAddress(x, y, z) {
+    return (x & 1)
+      | ((y & 1) << 1)
+      | ((z & 1) << 2)
+      | ((x & 2) << 2)
+      | ((y & 2) << 3)
+      | ((z & 2) << 4);
+  }
+
+  function coordinateFromAddress(layout, address) {
+    if (layout === "row") {
+      const x = address & 3;
+      const y = (address >> 2) & 3;
+      const z = (address >> 4) & 3;
+      return { x, y, z, morton: mortonAddress(x, y, z), row: address };
+    }
+
+    const x = (address & 1) | (((address >> 3) & 1) << 1);
+    const y = ((address >> 1) & 1) | (((address >> 4) & 1) << 1);
+    const z = ((address >> 2) & 1) | (((address >> 5) & 1) << 1);
+    return { x, y, z, morton: address, row: x + (4 * y) + (16 * z) };
   }
 
   function createMemoryMap(container, layout) {
@@ -58,10 +82,14 @@
 
       for (let offset = 0; offset < 8; offset += 1) {
         const address = (line * 8) + offset;
-        const cell = document.createElement("span");
+        const cell = document.createElement("button");
+        cell.type = "button";
         cell.className = "memory-cell";
         cell.textContent = String(address);
         cell.dataset.address = String(address);
+        cell.setAttribute("aria-label", `${layout === "morton" ? "Morton" : "Row-major"} address ${address}`);
+        cell.setAttribute("aria-pressed", "false");
+        cell.addEventListener("click", () => selectAddress(layout, address));
         lineElement.appendChild(cell);
         memoryCells[layout].set(address, cell);
       }
@@ -76,6 +104,7 @@
   function updateMemory() {
     const visited = activeStep < 0 ? [] : targetCoordinates.slice(0, activeStep + 1);
     const current = activeStep < 0 ? null : targetCoordinates[activeStep];
+    const selected = selectedCoordinate;
 
     for (const layout of ["morton", "row"]) {
       const targetAddresses = new Set(targetCoordinates.map((coordinate) => coordinate[layout]));
@@ -85,18 +114,32 @@
         cell.classList.toggle("target", targetAddresses.has(address));
         cell.classList.toggle("visited", visitedAddresses.has(address));
         cell.classList.toggle("current", current?.[layout] === address);
+        cell.classList.toggle("selected", selected?.[layout] === address);
+        cell.setAttribute("aria-pressed", String(selected?.[layout] === address));
       }
 
-      const activeLines = new Set(visited.map((coordinate) => Math.floor(coordinate[layout] / 8)));
+      const activeLines = new Set([
+        ...visited.map((coordinate) => Math.floor(coordinate[layout] / 8)),
+        ...(selected ? [Math.floor(selected[layout] / 8)] : [])
+      ]);
       const container = layout === "morton" ? mortonMemory : rowMemory;
       container.querySelectorAll(".cache-line").forEach((lineElement) => {
         lineElement.classList.toggle("line-active", activeLines.has(Number(lineElement.dataset.line)));
       });
     }
 
+    if (selected && !current) {
+      const source = selected.source === "morton" ? "Morton-order" : "x-major row";
+      coordinateOutput.textContent = `Selected coordinate (${selected.x}, ${selected.y}, ${selected.z})`;
+      statusOutput.textContent = `Selected from ${source} address ${selected[selected.source]}. The equivalent addresses are Morton ${selected.morton} and row-major ${selected.row}.`;
+      mortonOutput.textContent = `address ${selected.morton}`;
+      rowOutput.textContent = `address ${selected.row}`;
+      return;
+    }
+
     if (!current) {
       coordinateOutput.textContent = "Ready: eight spatial neighbors";
-      statusOutput.textContent = "Select “Run demo” to compare their linear addresses.";
+      statusOutput.textContent = "Select any memory address to locate its coordinate; select “Run demo” to compare the eight neighbors.";
       mortonOutput.textContent = "0–7";
       rowOutput.textContent = "0, 1, 4, 5, 16, 17, 20, 21";
       return;
@@ -211,42 +254,45 @@
       projected: project(point, parameters)
     })).sort((left, right) => right.projected.depth - left.projected.depth);
     const current = activeStep < 0 ? null : targetCoordinates[activeStep];
+    const selected = selectedCoordinate;
 
     for (const point of projectedPoints) {
       const target = targetKeys.has(point.key);
       const targetIndex = target ? targetCoordinates.findIndex((coordinate) => `${coordinate.x}:${coordinate.y}:${coordinate.z}` === point.key) : -1;
       const visited = targetIndex >= 0 && activeStep >= targetIndex;
       const isCurrent = current && current.x === point.x && current.y === point.y && current.z === point.z;
-      const radius = (target ? 6.3 : 3.2) * point.projected.perspective;
+      const isSelected = selected && selected.x === point.x && selected.y === point.y && selected.z === point.z;
+      const radius = (target || isSelected ? 6.3 : 3.2) * point.projected.perspective;
 
-      if (isCurrent) {
+      if (isCurrent || isSelected) {
         context.beginPath();
         context.arc(point.projected.x, point.projected.y, radius + 9, 0, Math.PI * 2);
-        context.fillStyle = "rgba(142, 225, 215, .16)";
+        context.fillStyle = isSelected ? "rgba(147, 197, 244, .18)" : "rgba(142, 225, 215, .16)";
         context.fill();
       }
 
       context.beginPath();
       context.arc(point.projected.x, point.projected.y, radius, 0, Math.PI * 2);
-      context.fillStyle = isCurrent ? "#e5fffb" : visited ? "#65d2c6" : target ? "#277f79" : "#547076";
+      context.fillStyle = isSelected ? "#dceeff" : isCurrent ? "#e5fffb" : visited ? "#65d2c6" : target ? "#277f79" : "#547076";
       context.fill();
-      context.strokeStyle = isCurrent ? "#65d2c6" : target ? "#8ee1d7" : "rgba(181, 211, 208, .35)";
-      context.lineWidth = isCurrent ? 3 : 1;
+      context.strokeStyle = isSelected ? "#93c5f4" : isCurrent ? "#65d2c6" : target ? "#8ee1d7" : "rgba(181, 211, 208, .35)";
+      context.lineWidth = isCurrent || isSelected ? 3 : 1;
       context.stroke();
     }
 
-    if (current) drawCurrentLabel(current, parameters);
+    if (current) drawCoordinateLabel(current, parameters, "#65d2c6");
+    else if (selected) drawCoordinateLabel(selected, parameters, "#93c5f4");
   }
 
-  function drawCurrentLabel(current, parameters) {
-    const projected = project(current, parameters);
-    const label = `(${current.x}, ${current.y}, ${current.z})`;
+  function drawCoordinateLabel(coordinate, parameters, accent) {
+    const projected = project(coordinate, parameters);
+    const label = `(${coordinate.x}, ${coordinate.y}, ${coordinate.z})`;
     context.font = "600 12px 'DM Mono', monospace";
     const width = context.measureText(label).width + 20;
     const x = Math.min(parameters.width - width - 10, projected.x + 14);
     const y = Math.max(12, projected.y - 38);
     context.fillStyle = "rgba(11, 29, 34, .94)";
-    context.strokeStyle = "#65d2c6";
+    context.strokeStyle = accent;
     context.lineWidth = 1;
     context.beginPath();
     context.roundRect(x, y, width, 30, 3);
@@ -301,6 +347,7 @@
   function runDemo() {
     window.clearTimeout(animationTimer);
     activeStep = -1;
+    selectedCoordinate = null;
     runButton.firstChild.textContent = "Running ";
     if (reducedMotion) {
       finishDemo();
@@ -314,6 +361,20 @@
     view.pitch = defaultView.pitch;
     render();
     canvas.focus({ preventScroll: true });
+  }
+
+  function selectAddress(layout, address) {
+    window.clearTimeout(animationTimer);
+    activeStep = -1;
+    const coordinate = coordinateFromAddress(layout, address);
+    const selectingCurrentCoordinate = selectedCoordinate
+      && selectedCoordinate.x === coordinate.x
+      && selectedCoordinate.y === coordinate.y
+      && selectedCoordinate.z === coordinate.z;
+    selectedCoordinate = selectingCurrentCoordinate ? null : { ...coordinate, source: layout };
+    runButton.firstChild.textContent = "Run demo ";
+    updateMemory();
+    render();
   }
 
   canvas.addEventListener("pointerdown", (event) => {
@@ -339,6 +400,12 @@
   canvas.addEventListener("pointercancel", stopDragging);
 
   canvas.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && selectedCoordinate) {
+      selectedCoordinate = null;
+      updateMemory();
+      render();
+      return;
+    }
     const change = event.shiftKey ? 0.18 : 0.09;
     if (event.key === "ArrowLeft") view.yaw -= change;
     else if (event.key === "ArrowRight") view.yaw += change;
