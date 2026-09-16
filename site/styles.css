@@ -112,14 +112,14 @@ h1 em { color: transparent; font-style: normal; -webkit-text-stroke: 1.5px #6981
 .locality-principle li strong { font: 600 .9rem var(--display); }
 .locality-principle li small { color: #58757a; font-size: .68rem; }
 .locality-demo { display: grid; grid-template-columns: minmax(420px, .9fr) minmax(540px, 1.1fr); border: 1px solid #29464d; box-shadow: 0 28px 70px rgba(34, 70, 70, .14); }
-.voxel-panel { min-width: 0; display: grid; grid-template-rows: auto 1fr auto; color: #e8f4f2; background: #10262c; }
+.voxel-panel { min-width: 0; min-height: 0; display: grid; grid-template-rows: auto 1fr auto; color: #e8f4f2; background: #10262c; }
 .demo-panel-head { min-height: 82px; display: flex; justify-content: space-between; gap: 1.5rem; align-items: flex-start; padding: 1.25rem 1.5rem; border-bottom: 1px solid #29464d; }
 .demo-panel-head span { color: #78a09f; font: 600 .6rem var(--display); letter-spacing: .12em; }
 .demo-panel-head h3 { margin: .25rem 0 0; font: 600 1.15rem var(--display); }
 .demo-panel-head .drag-hint { padding: .45rem .65rem; color: #aad6d1; border: 1px solid #3b5f62; letter-spacing: .03em; text-transform: none; }
-.voxel-stage { position: relative; min-height: 480px; overflow: hidden; background: radial-gradient(circle at 50% 42%, rgba(42, 164, 153, .16), transparent 42%), #0b1d22; }
+.voxel-stage { position: relative; min-width: 0; min-height: 480px; overflow: hidden; contain: layout paint; isolation: isolate; background: radial-gradient(circle at 50% 42%, rgba(42, 164, 153, .16), transparent 42%), #0b1d22; }
 .voxel-stage::before { content: ""; position: absolute; inset: 0; opacity: .45; background-image: linear-gradient(rgba(101, 210, 198, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(101, 210, 198, .055) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
-#locality-canvas { position: relative; z-index: 1; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#locality-canvas { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
 #locality-canvas:active { cursor: grabbing; }
 .axis-key { position: absolute; right: 1rem; bottom: .8rem; z-index: 2; display: flex; gap: .65rem; font: 600 .6rem var(--mono); }
 .axis-key span { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid currentColor; }

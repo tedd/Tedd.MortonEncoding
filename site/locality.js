@@ -2,6 +2,7 @@
   "use strict";
 
   const canvas = document.querySelector("#locality-canvas");
+  const stage = canvas?.closest(".voxel-stage");
   const runButton = document.querySelector("#run-locality-demo");
   const resetButton = document.querySelector("#reset-locality-view");
   const coordinateOutput = document.querySelector("#demo-coordinate");
@@ -11,7 +12,7 @@
   const mortonMemory = document.querySelector("#morton-memory");
   const rowMemory = document.querySelector("#row-memory");
 
-  if (!canvas || !runButton || !resetButton || !coordinateOutput || !statusOutput || !mortonMemory || !rowMemory) return;
+  if (!canvas || !stage || !runButton || !resetButton || !coordinateOutput || !statusOutput || !mortonMemory || !rowMemory) return;
 
   const context = canvas.getContext("2d");
   if (!context) return;
@@ -266,8 +267,8 @@
 
   function resizeCanvas() {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
-    const width = Math.max(1, Math.round(canvas.clientWidth));
-    const height = Math.max(1, Math.round(canvas.clientHeight));
+    const width = Math.max(1, Math.round(stage.clientWidth));
+    const height = Math.max(1, Math.round(stage.clientHeight));
     const pixelWidth = Math.round(width * ratio);
     const pixelHeight = Math.round(height * ratio);
     if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
@@ -350,7 +351,11 @@
 
   runButton.addEventListener("click", runDemo);
   resetButton.addEventListener("click", resetView);
-  new ResizeObserver(resizeCanvas).observe(canvas);
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(resizeCanvas).observe(stage);
+  } else {
+    window.addEventListener("resize", resizeCanvas);
+  }
   updateMemory();
   resizeCanvas();
 })();
