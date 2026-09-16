@@ -11,6 +11,7 @@
   <script>document.documentElement.classList.add("js")</script>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
+  <script src="locality.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -21,9 +22,9 @@
       <span>TEDD<span class="brand-slash">/</span>MORTON</span>
     </a>
     <nav aria-label="Primary navigation">
+      <a href="#locality">Why Morton</a>
       <a href="#capacity">Capacity</a>
       <a href="#implementation">Implementation</a>
-      <a href="#frameworks">Frameworks</a>
       <a href="https://github.com/tedd/Tedd.MortonEncoding">Source</a>
       <a class="nav-cta" href="#install">Install</a>
     </nav>
@@ -40,7 +41,7 @@
           <a class="button primary" href="https://www.nuget.org/packages/Tedd.MortonEncoding/">
             <span>View on NuGet</span><span aria-hidden="true">↗</span>
           </a>
-          <a class="button secondary" href="#usage">View API examples</a>
+          <a class="button secondary" href="#locality">Examine memory locality</a>
         </div>
         <ul class="hero-checks" aria-label="Library properties">
           <li>Two and three dimensions</li>
@@ -91,6 +92,94 @@
       <p><strong>32 + 64 bit</strong><span>Morton code widths</span></p>
       <p><strong>BMI2</strong><span>Automatic PDEP and PEXT dispatch</span></p>
       <p><strong>0 allocations</strong><span>Static value-type API</span></p>
+    </section>
+
+    <section class="locality section-shell" id="locality">
+      <div class="section-intro reveal">
+        <div>
+          <p class="eyebrow">Spatial locality in linear memory</p>
+          <h2>Store neighborhoods together, then read them together.</h2>
+        </div>
+        <p>A Morton code interleaves coordinate bits so that each aligned octant is a contiguous code interval. When records are sorted or indexed by that code, spatial queries tend to read compact memory ranges instead of widely separated rows.</p>
+      </div>
+
+      <div class="locality-principle reveal">
+        <p><strong>Encoding is the address key, not the storage policy.</strong> Cache locality changes only when payloads are stored, sorted, indexed, or traversed in Morton order. Calculating a code while retaining another layout does not reorganize memory.</p>
+        <ol aria-label="Locality mechanism">
+          <li><span>01</span><strong>Encode</strong><small>Interleave X, Y, and Z bits.</small></li>
+          <li><span>02</span><strong>Arrange</strong><small>Order records by Morton code.</small></li>
+          <li><span>03</span><strong>Traverse</strong><small>Read spatial ranges sequentially.</small></li>
+        </ol>
+      </div>
+
+      <div class="locality-demo reveal">
+        <div class="voxel-panel">
+          <div class="demo-panel-head">
+            <div>
+              <span>INTERACTIVE 3D LATTICE</span>
+              <h3>One 2 × 2 × 2 octant</h3>
+            </div>
+            <span class="drag-hint">Drag to rotate</span>
+          </div>
+          <div class="voxel-stage">
+            <canvas id="locality-canvas" tabindex="0" role="img" aria-label="Rotatable four by four by four coordinate lattice. Eight highlighted coordinates form one local octant. Drag with a pointer or use the arrow keys to rotate it."></canvas>
+            <div class="axis-key" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+          </div>
+          <div class="demo-controls">
+            <button class="button primary demo-button" id="run-locality-demo" type="button">Run demo <span aria-hidden="true">▶</span></button>
+            <button class="reset-view" id="reset-locality-view" type="button">Reset view</button>
+            <p>Mouse or touch: drag the lattice to inspect the coordinates.</p>
+          </div>
+        </div>
+
+        <div class="memory-panel">
+          <div class="memory-panel-head">
+            <p class="eyebrow">Exact address comparison</p>
+            <h3 id="demo-coordinate">Ready: eight spatial neighbors</h3>
+            <p id="demo-status" class="demo-status" aria-live="polite">Select “Run demo” to compare their linear addresses.</p>
+          </div>
+
+          <div class="memory-layout" data-layout="morton">
+            <div class="memory-layout-title">
+              <div><strong>Morton-ordered storage</strong><span>address = interleave(x, y, z)</span></div>
+              <output id="morton-address">0–7</output>
+            </div>
+            <div class="cache-lines" id="morton-memory" role="group" aria-label="Morton-order memory addresses zero through thirty-one"></div>
+          </div>
+
+          <div class="memory-layout" data-layout="row">
+            <div class="memory-layout-title">
+              <div><strong>X-major row storage</strong><span>address = x + 4y + 16z</span></div>
+              <output id="row-address">0, 1, 4, 5, 16, 17, 20, 21</output>
+            </div>
+            <div class="cache-lines" id="row-memory" role="group" aria-label="Row-major memory addresses zero through thirty-one"></div>
+          </div>
+
+          <div class="cache-conclusion">
+            <div><strong>1</strong><span>Morton cache line</span></div>
+            <div><strong>2</strong><span>Row-major cache lines</span></div>
+            <p>Illustration: 8-byte payloads and 64-byte cache lines. A compact address run can reduce cache-line fragmentation and gives a sequential hardware prefetcher a more useful access stream.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="locality-notes reveal">
+        <article>
+          <span>LOCAL RANGE</span>
+          <h3>Octants become intervals.</h3>
+          <p>The low octant shown above occupies Morton addresses <code>0–7</code>. The same coordinates occupy <code>0, 1, 4, 5, 16, 17, 20, 21</code> in x-major row storage.</p>
+        </article>
+        <article>
+          <span>CACHE BEHAVIOR</span>
+          <h3>Fewer unrelated lines.</h3>
+          <p>Compact ranges can increase useful bytes per fetched cache line and can make sequential prefetch more effective. The actual gain depends on payload size, query shape, and traversal order.</p>
+        </article>
+        <article>
+          <span>BOUNDARY CONDITION</span>
+          <h3>Locality is hierarchical.</h3>
+          <p>Z-order is not globally distance-preserving. Nearby points can be separated at interval boundaries; the representation favors recursive regions rather than every possible neighborhood.</p>
+        </article>
+      </div>
     </section>
 
     <section class="capacity section-shell" id="capacity">
