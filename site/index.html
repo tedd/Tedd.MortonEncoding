@@ -136,7 +136,15 @@
           <div class="memory-panel-head">
             <p class="eyebrow">Exact address comparison</p>
             <h3 id="demo-coordinate">Ready: eight spatial neighbors</h3>
-            <p id="demo-status" class="demo-status" aria-live="polite">Select any memory address to locate its coordinate; select “Run demo” to compare the eight neighbors.</p>
+            <p id="demo-status" class="demo-status" aria-live="polite">Select a naive or Morton address to locate the same coordinate in all three views; select “Run demo” to compare the eight neighbors.</p>
+          </div>
+
+          <div class="memory-layout" data-layout="naive">
+            <div class="memory-layout-title">
+              <div><strong>Naive storage</strong><span>non-linear access for this region · address = x + 4y + 16z</span></div>
+              <output id="naive-address">0, 1, 4, 5, 16, 17, 20, 21</output>
+            </div>
+            <div class="cache-lines" id="naive-memory" role="group" aria-label="Naive x-major memory addresses zero through thirty-one"></div>
           </div>
 
           <div class="memory-layout" data-layout="morton">
@@ -147,17 +155,9 @@
             <div class="cache-lines" id="morton-memory" role="group" aria-label="Morton-order memory addresses zero through thirty-one"></div>
           </div>
 
-          <div class="memory-layout" data-layout="row">
-            <div class="memory-layout-title">
-              <div><strong>X-major row storage</strong><span>address = x + 4y + 16z</span></div>
-              <output id="row-address">0, 1, 4, 5, 16, 17, 20, 21</output>
-            </div>
-            <div class="cache-lines" id="row-memory" role="group" aria-label="Row-major memory addresses zero through thirty-one"></div>
-          </div>
-
           <div class="cache-conclusion">
+            <div><strong>2</strong><span>Naive cache lines</span></div>
             <div><strong>1</strong><span>Morton cache line</span></div>
-            <div><strong>2</strong><span>Row-major cache lines</span></div>
             <p>Illustration: 8-byte payloads and 64-byte cache lines. A compact address run can reduce cache-line fragmentation and gives a sequential hardware prefetcher a more useful access stream.</p>
           </div>
         </div>
@@ -167,7 +167,7 @@
         <article>
           <span>LOCAL RANGE</span>
           <h3>Octants become intervals.</h3>
-          <p>The low octant shown above occupies Morton addresses <code>0–7</code>. The same coordinates occupy <code>0, 1, 4, 5, 16, 17, 20, 21</code> in x-major row storage.</p>
+          <p>The low octant shown above occupies Morton addresses <code>0–7</code>. The same coordinates occupy <code>0, 1, 4, 5, 16, 17, 20, 21</code> in naïve x-major storage: a non-linear access pattern for this local region.</p>
         </article>
         <article>
           <span>CACHE BEHAVIOR</span>

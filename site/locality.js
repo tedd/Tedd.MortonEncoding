@@ -8,11 +8,11 @@
   const coordinateOutput = document.querySelector("#demo-coordinate");
   const statusOutput = document.querySelector("#demo-status");
   const mortonOutput = document.querySelector("#morton-address");
-  const rowOutput = document.querySelector("#row-address");
+  const naiveOutput = document.querySelector("#naive-address");
   const mortonMemory = document.querySelector("#morton-memory");
-  const rowMemory = document.querySelector("#row-memory");
+  const naiveMemory = document.querySelector("#naive-memory");
 
-  if (!canvas || !stage || !runButton || !resetButton || !coordinateOutput || !statusOutput || !mortonMemory || !rowMemory) return;
+  if (!canvas || !stage || !runButton || !resetButton || !coordinateOutput || !statusOutput || !mortonMemory || !naiveMemory) return;
 
   const context = canvas.getContext("2d");
   if (!context) return;
@@ -22,12 +22,12 @@
   const view = { ...defaultView };
   const points = [];
   const pointByKey = new Map();
-  const memoryCells = { morton: new Map(), row: new Map() };
+  const memoryCells = { morton: new Map(), naive: new Map() };
   const targetCoordinates = Array.from({ length: 8 }, (_, morton) => {
     const x = morton & 1;
     const y = (morton >> 1) & 1;
     const z = (morton >> 2) & 1;
-    return { x, y, z, morton, row: x + (4 * y) + (16 * z) };
+    return { x, y, z, morton, naive: x + (4 * y) + (16 * z) };
   });
   const targetKeys = new Set(targetCoordinates.map(({ x, y, z }) => `${x}:${y}:${z}`));
   let activeStep = -1;
@@ -56,17 +56,17 @@
   }
 
   function coordinateFromAddress(layout, address) {
-    if (layout === "row") {
+    if (layout === "naive") {
       const x = address & 3;
       const y = (address >> 2) & 3;
       const z = (address >> 4) & 3;
-      return { x, y, z, morton: mortonAddress(x, y, z), row: address };
+      return { x, y, z, morton: mortonAddress(x, y, z), naive: address };
     }
 
     const x = (address & 1) | (((address >> 3) & 1) << 1);
     const y = ((address >> 1) & 1) | (((address >> 4) & 1) << 1);
     const z = ((address >> 2) & 1) | (((address >> 5) & 1) << 1);
-    return { x, y, z, morton: address, row: x + (4 * y) + (16 * z) };
+    return { x, y, z, morton: address, naive: x + (4 * y) + (16 * z) };
   }
 
   function createMemoryMap(container, layout) {
@@ -87,7 +87,7 @@
         cell.className = "memory-cell";
         cell.textContent = String(address);
         cell.dataset.address = String(address);
-        cell.setAttribute("aria-label", `${layout === "morton" ? "Morton" : "Row-major"} address ${address}`);
+        cell.setAttribute("aria-label", `${layout === "morton" ? "Morton" : "Naive"} address ${address}`);
         cell.setAttribute("aria-pressed", "false");
         cell.addEventListener("click", () => selectAddress(layout, address));
         lineElement.appendChild(cell);
@@ -98,15 +98,15 @@
     }
   }
 
+  createMemoryMap(naiveMemory, "naive");
   createMemoryMap(mortonMemory, "morton");
-  createMemoryMap(rowMemory, "row");
 
   function updateMemory() {
     const visited = activeStep < 0 ? [] : targetCoordinates.slice(0, activeStep + 1);
     const current = activeStep < 0 ? null : targetCoordinates[activeStep];
     const selected = selectedCoordinate;
 
-    for (const layout of ["morton", "row"]) {
+    for (const layout of ["naive", "morton"]) {
       const targetAddresses = new Set(targetCoordinates.map((coordinate) => coordinate[layout]));
       const visitedAddresses = new Set(visited.map((coordinate) => coordinate[layout]));
 
@@ -122,39 +122,39 @@
         ...visited.map((coordinate) => Math.floor(coordinate[layout] / 8)),
         ...(selected ? [Math.floor(selected[layout] / 8)] : [])
       ]);
-      const container = layout === "morton" ? mortonMemory : rowMemory;
+      const container = layout === "morton" ? mortonMemory : naiveMemory;
       container.querySelectorAll(".cache-line").forEach((lineElement) => {
         lineElement.classList.toggle("line-active", activeLines.has(Number(lineElement.dataset.line)));
       });
     }
 
     if (selected && !current) {
-      const source = selected.source === "morton" ? "Morton-order" : "x-major row";
+      const source = selected.source === "morton" ? "Morton-order" : "naive x-major";
       coordinateOutput.textContent = `Selected coordinate (${selected.x}, ${selected.y}, ${selected.z})`;
-      statusOutput.textContent = `Selected from ${source} address ${selected[selected.source]}. The equivalent addresses are Morton ${selected.morton} and row-major ${selected.row}.`;
+      statusOutput.textContent = `Selected from ${source} address ${selected[selected.source]}. The equivalent addresses are naive ${selected.naive} and Morton ${selected.morton}.`;
       mortonOutput.textContent = `address ${selected.morton}`;
-      rowOutput.textContent = `address ${selected.row}`;
+      naiveOutput.textContent = `address ${selected.naive}`;
       return;
     }
 
     if (!current) {
       coordinateOutput.textContent = "Ready: eight spatial neighbors";
-      statusOutput.textContent = "Select any memory address to locate its coordinate; select “Run demo” to compare the eight neighbors.";
+      statusOutput.textContent = "Select a naive or Morton address to locate the same coordinate in all three views; select “Run demo” to compare the eight neighbors.";
       mortonOutput.textContent = "0–7";
-      rowOutput.textContent = "0, 1, 4, 5, 16, 17, 20, 21";
+      naiveOutput.textContent = "0, 1, 4, 5, 16, 17, 20, 21";
       return;
     }
 
     coordinateOutput.textContent = `Coordinate (${current.x}, ${current.y}, ${current.z})`;
-    statusOutput.textContent = `Step ${activeStep + 1} of 8: Morton address ${current.morton}; row-major address ${current.row}.`;
+    statusOutput.textContent = `Step ${activeStep + 1} of 8: naive address ${current.naive}; Morton address ${current.morton}.`;
     mortonOutput.textContent = `address ${current.morton}`;
-    rowOutput.textContent = `address ${current.row}`;
+    naiveOutput.textContent = `address ${current.naive}`;
 
     if (activeStep === targetCoordinates.length - 1) {
       coordinateOutput.textContent = "Eight neighboring coordinates visited";
-      statusOutput.textContent = "Morton order used one cache line; x-major row order used two cache lines in this model.";
+      statusOutput.textContent = "Naive x-major storage used two cache lines; Morton order used one cache line in this model.";
       mortonOutput.textContent = "contiguous 0–7";
-      rowOutput.textContent = "two separated groups";
+      naiveOutput.textContent = "two separated groups";
     }
   }
 
