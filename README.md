@@ -28,24 +28,24 @@ The hot-path encoders deliberately mask unsupported high coordinate bits rather 
 ```csharp
 using Tedd;
 
-uint x = 10;
-uint y = 20;
+var x = 10u;
+var y = 20u;
 
-uint code2D = MortonEncoding.Encode(x, y);
-MortonEncoding.Decode(code2D, out uint decodedX, out uint decodedY);
+var code2D = MortonEncoding.Encode(x, y);
+MortonEncoding.Decode(code2D, out var decodedX, out var decodedY);
 
-uint x32 = 4_000_000_000;
-uint y32 = 3_000_000_000;
+var x32 = 4_000_000_000u;
+var y32 = 3_000_000_000u;
 
-ulong code2D64 = MortonEncoding.Encode64(x32, y32);
-MortonEncoding.Decode64(code2D64, out uint decodedX32, out uint decodedY32);
+var code2D64 = MortonEncoding.Encode64(x32, y32);
+MortonEncoding.Decode64(code2D64, out var decodedX32, out var decodedY32);
 
-uint x21 = 1_000_000;
-uint y21 = 1_500_000;
-uint z21 = 2_000_000;
+var x21 = 1_000_000u;
+var y21 = 1_500_000u;
+var z21 = 2_000_000u;
 
-ulong code3D64 = MortonEncoding.Encode64(x21, y21, z21);
-MortonEncoding.Decode64(code3D64, out uint decodedX21, out uint decodedY21, out uint decodedZ21);
+var code3D64 = MortonEncoding.Encode64(x21, y21, z21);
+MortonEncoding.Decode64(code3D64, out var decodedX21, out var decodedY21, out var decodedZ21);
 ```
 
 The equivalent 3D 32-bit overloads are `Encode(uint, uint, uint)` and `Decode(uint, out uint, out uint, out uint)`.
@@ -56,12 +56,19 @@ On `netcoreapp3.0`, `net8.0`, and `net10.0`, the dispatcher uses x86/x64 BMI2 `P
 
 `EncodeFallback`, `DecodeFallback`, `Encode64Fallback`, and `Decode64Fallback` expose the deterministic software path for environments that require it and for comparative benchmarks. All methods are thread-safe and allocate no managed memory.
 
+## Architectural Execution Flow
+
+The framework's internal mechanics utilize a static dispatcher that evaluates processor capabilities at runtime to select the optimal execution path. On supported architectures, it routes execution to `PDEP` and `PEXT` hardware intrinsics to eliminate branching and minimize clock cycles. If hardware acceleration is unavailable, execution predictably falls back to a deterministic, allocation-free shift-and-mask software implementation.
+
+**Planned Future Enhancements (Hypotheses):**
+Subsequent iterations of the framework may explore the integration of hierarchical data binding and routed event infrastructure to augment spatial coordinate aggregation. These paradigms remain strictly theoretical roadmap hypotheses and are not present in the current operational implementation.
+
 ## Contiguous-field helpers
 
 `SplitXY` and `SplitXYZ` split a scalar containing adjacent, equally sized fields. They do not decode an interleaved Morton code.
 
 ```csharp
-MortonEncoding.SplitXY(0b_1010_0011u, 4, out uint high, out uint low);
+MortonEncoding.SplitXY(0b_1010_0011u, 4, out var high, out var low);
 // high == 0b1010; low == 0b0011
 ```
 
