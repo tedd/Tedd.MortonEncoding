@@ -1,0 +1,5 @@
+## 2024-11-02 - Dependency Modernization
+
+**Observation:** `xunit.runner.visualstudio` 3.0.0+ drops support for legacy .NET Framework targets (`net461`), and `Microsoft.NET.Test.Sdk` 18.x causes compatibility warnings on legacy targets.
+
+**Strategic Action:** Updated `Tedd.MortonEncoding.DotNet4Tests` TargetFramework from `net461` to `net462` because `xunit.runner.visualstudio` completely dropped support for `net461` after version 2.4.5, and version 2.8.2 is required as the highest compatible version before 3.0.0. Pinned `xunit.runner.visualstudio` to `2.8.2` for this legacy project. Added `<SuppressTfmSupportBuildErrors>true</SuppressTfmSupportBuildErrors>` to `Tedd.MortonEncoding.DotNet4Tests` to allow modernization of `Microsoft.NET.Test.Sdk` without build warnings. Updated test dependencies in both test projects to their respective latest compatible versions. Note: Modifying `Tedd.MortonEncoding.DotNet4Tests` target is safe because it only tests the library and does not change the published package's API or compatibility contract.
